@@ -1,5 +1,11 @@
 package com.projeto.pi.projeto_pi.cars;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
-public interface CarRepo extends JpaRepository<Car, Long>{}
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+public interface CarRepo extends PagingAndSortingRepository<Car, Long> {
+    Optional<Car> findById(long id);
+
+    Car save(Car item);
+}
