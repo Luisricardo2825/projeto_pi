@@ -1,6 +1,6 @@
 package com.projeto.pi.projeto_pi.cars;
 
-import java.sql.Date;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -31,8 +31,11 @@ public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String marca;
+
     private String descricao;
+
     private String modelo;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -41,7 +44,7 @@ public class Car {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date anoFabricacao;
 
-    private Double valor;
+    private double valor;
 
     private String image;
 
