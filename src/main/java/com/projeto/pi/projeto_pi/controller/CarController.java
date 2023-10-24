@@ -111,6 +111,6 @@ public class CarController {
     // }
     @ExceptionHandler({ AccessDeniedException.class })
     public ResponseEntity<?> handleAccessException(Exception ex, WebRequest request) {
-        return er.error(ex.getMessage(), HttpStatus.FORBIDDEN);
+        return er.error("Acesso negado. Nivel de permissão insuficiente", HttpStatus.FORBIDDEN);
     }
 }
