@@ -4,8 +4,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.projeto.pi.projeto_pi.configuration.Encoder;
 
 /**
  * Altera o valor dos atributos de um objeto existente com os valores de outro
@@ -18,7 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ReplaceObjectAttributes<T> {
 
     @Autowired
-    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private PasswordEncoder passwordEncoder = Encoder.getEncoder();
 
     T existingItem = null;
 
@@ -37,8 +38,6 @@ public class ReplaceObjectAttributes<T> {
 
         Field[] declaredFields = item.getClass().getDeclaredFields();
         for (Field field : declaredFields) {
-            boolean isPk = false;
-            boolean encode = false;
             field.setAccessible(true);
             try {
                 String name = field.getName();
@@ -49,20 +48,11 @@ public class ReplaceObjectAttributes<T> {
                  * Validação para evitar a troca da PK,
                  * verificado qual campo possui a annotation
                  */
-                Annotation[] annotations = field.getAnnotations();
-                for (Annotation annotation : annotations) {
-                    String annotationName = annotation.annotationType().getSimpleName();
-                    if (annotationName.equals("Id")) {
-                        isPk = true;
-                    }
-                    if (annotationName.equals("Encode")) {
-                        encode = true;
-                    }
-                }
-                if (isPk) {
+
+                if (isPk(field)) {
                     continue;
                 }
-                if (encode) {
+                if (isEncode(field)) {
                     value = passwordEncoder.encode(value.toString());
                 }
 
@@ -79,5 +69,27 @@ public class ReplaceObjectAttributes<T> {
         }
         return existingItem;
 
+    }
+
+    // Verifica se o campo possui a annotation @Id para evitar a troca da PK
+    private boolean isPk(Field field) {
+        Annotation[] annotations = field.getDeclaredAnnotations();
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType().getSimpleName().equals("Id")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Verifica se o campo possui a annotation @Encode para encriptar o valor
+    private boolean isEncode(Field field) {
+        Annotation[] annotations = field.getDeclaredAnnotations();
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType().getSimpleName().equals("Encode")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
