@@ -3,6 +3,10 @@ package com.projeto.pi.projeto_pi.utils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 /**
  * Altera o valor dos atributos de um objeto existente com os valores de outro
  * objeto, nunca alterando a PK.
@@ -12,6 +16,10 @@ import java.lang.reflect.Field;
  * @since 1.0
  */
 public class ReplaceObjectAttributes<T> {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     T existingItem = null;
 
     public ReplaceObjectAttributes(T existingItem) {
@@ -30,6 +38,7 @@ public class ReplaceObjectAttributes<T> {
         Field[] declaredFields = item.getClass().getDeclaredFields();
         for (Field field : declaredFields) {
             boolean isPk = false;
+            boolean encode = false;
             field.setAccessible(true);
             try {
                 String name = field.getName();
@@ -45,11 +54,16 @@ public class ReplaceObjectAttributes<T> {
                     String annotationName = annotation.annotationType().getSimpleName();
                     if (annotationName.equals("Id")) {
                         isPk = true;
-                        break;
+                    }
+                    if (annotationName.equals("Encode")) {
+                        encode = true;
                     }
                 }
                 if (isPk) {
                     continue;
+                }
+                if (encode) {
+                    value = passwordEncoder.encode(value.toString());
                 }
 
                 if (value == null) {

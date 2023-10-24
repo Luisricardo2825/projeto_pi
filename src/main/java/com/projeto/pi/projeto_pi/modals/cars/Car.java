@@ -1,4 +1,4 @@
-package com.projeto.pi.projeto_pi.cars;
+package com.projeto.pi.projeto_pi.modals.cars;
 
 import java.util.Date;
 
@@ -49,15 +49,14 @@ public class Car {
     private String image;
 
     public Car(CarResponseDTO data) {
-        this.marca = data.marca();
-        this.descricao = data.descricao();
-        this.descricao = data.descricao();
-        this.modelo = data.modelo();
-        this.anoModelo = data.anoModelo();
-        this.anoFabricacao = data.anoFabricacao();
-        this.valor = data.valor();
-        this.image = data.image();
-        this.id = data.id();
+        this.marca = data.getMarca();
+        this.descricao = data.getDescricao();
+        this.modelo = data.getModelo();
+        this.anoModelo = data.getAnoModelo();
+        this.anoFabricacao = data.getAnoFabricacao();
+        this.valor = data.getValor();
+        this.image = data.getImage();
+        this.id = data.getId();
     }
 
     public CarResponseDTO toDTO() {
