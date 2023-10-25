@@ -9,6 +9,16 @@
       "name": "admin.password",
       "type": "java.lang.String",
       "description": "Senha do admin"
+    },
+    {
+      "name": "jwt.token.secret",
+      "type": "java.lang.String",
+      "description": "Segredo a ser usado na geração do token/hash"
+    },
+    {
+      "name": "jwt.token.exp",
+      "type": "java.lang.Long",
+      "description": "Tempo de duração do token em segundos"
     }
   ]
 }

@@ -54,10 +54,11 @@ public class CarController {
     }
 
     @GetMapping
-    public Page<Car> getAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public Page<CarResponseDTO> getAll(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         PageRequest of = PageRequest.of(page, size);
 
-        Page<Car> findAll = repository.findAll(of);
+        Page<CarResponseDTO> findAll = repository.findAll(of).map(car -> car.toDTO());
         return findAll;
     }
 

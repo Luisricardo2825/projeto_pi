@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
@@ -13,28 +14,32 @@ import com.projeto.pi.projeto_pi.modals.users.User;
 @Service
 public class TokenService {
 
+    @Value("${jwt.token.exp:600}")
+    private Long tokenExpiration;
+
     // Não é o mais seguro, mas serve pro proposito :/
-    private String secret = "43cu95n8r34v8975yb834589tvm456049nt4y5o0";
+    @Value("${jwt.token.secret:43cu95n8r34v8975yb834589tvm456049nt4y5o0}")
+    private String secret;
 
     public String generateToken(User user) {
         return JWT.create()
-                .withIssuer("/login")
+                .withClaim("carros", true)
+                .withClaim("users", user.getRole().equals("ROLE_ADMIN"))
                 .withSubject(user.getUsername())
                 .withClaim("id", user.getId())
                 .withExpiresAt(
-                        this.getExpirationDateFromToken() // UTC -03:00 Brasil
-                ).sign(Algorithm.HMAC256(secret));
+                        this.getExpirationDateFromToken())
+                .sign(Algorithm.HMAC256(secret));
     }
 
-    public String getLogin(String token) {
-        return JWT.require(Algorithm.HMAC256(secret))
-                .withIssuer("/login").build().verify(token).getSubject();
+    public String verify(String token) {
+        return JWT.require(Algorithm.HMAC256(secret)).build().verify(token).getSubject();
     }
 
     public Instant getExpirationDateFromToken() {
         return LocalDateTime.now()
-                .plusMinutes(10)
-                .toInstant(ZoneOffset.of("-03:00"));
+                .plusSeconds(tokenExpiration)
+                .toInstant(ZoneOffset.of("+00:00")); // Fortaleza-CE/Brasilia-DF é 00:00
     }
 
 }

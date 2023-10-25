@@ -15,7 +15,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.projeto.pi.projeto_pi.Spring.AccessEntryPoint;
-import com.projeto.pi.projeto_pi.Spring.CustomErrorController;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
@@ -32,17 +31,21 @@ public class Configs {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configure(http))
                 .exceptionHandling(handling -> handling
-                        .accessDeniedHandler(new CustomErrorController())// Valida o erro na saida
                         .authenticationEntryPoint(
                                 new AccessEntryPoint())) // Valida o erro na entrada(ex: Foi em uma
                                                          // rota sem autenticar)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/cars", "/cars/*").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().hasRole("ADMIN"))
 
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Remove
+                                                                                                              // controle
+                                                                                                              // por
+                                                                                                              // sessão
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class); // Adiciona o middleware para
+                                                                                      // validação do JWT
 
         return http.build();
     }

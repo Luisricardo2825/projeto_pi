@@ -4,13 +4,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import com.projeto.pi.projeto_pi.modals.auth.LoginRequestDTO;
+import com.projeto.pi.projeto_pi.modals.auth.LoginResponseDTO;
 import com.projeto.pi.projeto_pi.modals.users.User;
 import com.projeto.pi.projeto_pi.services.TokenService;
 import com.projeto.pi.projeto_pi.utils.ReponseBuilder;
 
 import jakarta.validation.Valid;
 
-import java.util.HashMap;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,16 +44,16 @@ public class AuthController {
         User user = (User) authenticate.getPrincipal();
         String jwtToken = tokenService.generateToken(user);
 
-        java.util.Map<String, Object> success = new HashMap<>();
+        // To date and hour
+        Date myDate = Date.from(tokenService.getExpirationDateFromToken());
+        String role = user.getRole();
+        Long userId = user.getId();
+        String login = user.getLogin();
+        String nome = user.getNome();
 
-        success.put("token", jwtToken);
-        success.put("exp", tokenService.getExpirationDateFromToken());
-        success.put("role", user.getRole());
-        success.put("user", user.getId());
-        success.put("name", user.getNome());
-        success.put("login", user.getLogin());
-        
-        return new ResponseEntity<>(success,HttpStatus.ACCEPTED);
+        LoginResponseDTO loginReponse = new LoginResponseDTO(jwtToken, myDate, role, userId, role, nome, login);
+
+        return new ResponseEntity<>(loginReponse, HttpStatus.ACCEPTED);
     }
 
     // ...

@@ -3,6 +3,7 @@ package com.projeto.pi.projeto_pi.modals.users;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.projeto.pi.projeto_pi.annotations.EnumValidator;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -42,9 +43,8 @@ public class UserRequestDTO {
     @NotNull(message = "O data de cadastro deve ser informado")
     @PastOrPresent(message = "A data de cadastro nao pode ser posterior a data atual")
     private Date dataCadastro;
-    
-    @NotBlank(message = "O role deve ser informado")
-    @NotNull(message = "Valor invalido para o role")
+
+    @EnumValidator(enumclass = User.Role.class, message = "Valor inválido para role")
     private String role;
 
     public User toEntity() {

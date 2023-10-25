@@ -23,7 +23,8 @@ public class AccessEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
         ReponseBuilder er = new ReponseBuilder();
-        ResponseEntity<Map<String, Object>> error = er.error(authException.getMessage(), HttpStatus.FORBIDDEN);
+        ResponseEntity<Map<String, Object>> error = er.error("Erro:" + authException.getMessage(),
+                HttpStatus.FORBIDDEN);
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(error.getBody());
@@ -34,8 +35,6 @@ public class AccessEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         response.getWriter().write(json);
-        response.getWriter().flush();
-        response.getWriter().close();
     }
 
 }

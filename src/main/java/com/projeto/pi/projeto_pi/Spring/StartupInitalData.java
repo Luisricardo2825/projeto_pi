@@ -29,6 +29,7 @@ public class StartupInitalData implements CommandLineRunner {
     public void run(String... args) throws Exception {
         long id = 1;
         Date date = new Date(System.currentTimeMillis());
+        // Set<Interest> interests = null;
         if (userRepository.findByLoginIgnoreCase(adminUsername).isEmpty()) {
             User admin = new User(id, adminUsername, encoder.encode(
                     adminPassword), "Administrador", true,

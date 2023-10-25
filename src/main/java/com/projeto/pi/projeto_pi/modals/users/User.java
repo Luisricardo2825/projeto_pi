@@ -53,6 +53,11 @@ public class User implements UserDetails {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dataCadastro;
 
+    public static enum Role {
+        ADMIN,
+        USER
+    }
+
     private String role;
 
     public User(UserResponseDTO data) {
@@ -72,7 +77,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        role = "ROLE_" + role;
+        String role = "ROLE_" + this.role;
         return List.of(new SimpleGrantedAuthority(role));
     }
 

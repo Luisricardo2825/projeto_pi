@@ -11,7 +11,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
+import com.projeto.pi.projeto_pi.modals.interests.Interest;
+import com.projeto.pi.projeto_pi.modals.interests.InterestRepo;
+import com.projeto.pi.projeto_pi.modals.interests.InterestRequestDTO;
 import com.projeto.pi.projeto_pi.modals.users.User;
-import com.projeto.pi.projeto_pi.modals.users.UserRepo;
-import com.projeto.pi.projeto_pi.modals.users.UserRequestDTO;
-import com.projeto.pi.projeto_pi.modals.users.UserResponseDTO;
 import com.projeto.pi.projeto_pi.utils.ReplaceObjectAttributes;
 import com.projeto.pi.projeto_pi.utils.ReponseBuilder;
 
@@ -35,12 +34,11 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/users")
-@CrossOrigin(origins = "*", allowedHeaders = "*")
-public class UserController {
+@RequestMapping("/interests")
+public class InterestController {
 
     @Autowired
-    private UserRepo repository;
+    private InterestRepo repository;
 
     @Autowired
     PasswordEncoder encoder;
@@ -49,91 +47,95 @@ public class UserController {
 
     @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable("id") Long id) {
-        Optional<User> existingItemOptional = repository.findById(id);
+        Optional<Interest> existingItemOptional = repository.findById(id);
 
         if (existingItemOptional.isPresent()) {
-            User existingItem = existingItemOptional.get();
+            Interest existingItem = existingItemOptional.get();
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User name = (User) auth.getPrincipal();
+            User user = (User) auth.getPrincipal();
 
-            if (name.getId() != id && !name.getLogin().equalsIgnoreCase("admin")) {
+            if (!user.getLogin().equalsIgnoreCase("admin")) {
                 throw new AccessDeniedException("Acesso negado");
             }
 
-            return new ResponseEntity<UserResponseDTO>(existingItem.toDTO(), HttpStatus.OK);
+            return new ResponseEntity<Interest>(existingItem, HttpStatus.OK);
         } else {
 
-            return er.error("Usuário não encontrado", HttpStatus.NOT_FOUND);
+            return er.error("Interesse não encontrado", HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping
-    @RolesAllowed("ADMIN")
-    public Page<UserResponseDTO> getAll(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public Page<Interest> getAll(@RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String nome) {
         PageRequest of = PageRequest.of(page, size);
 
-        Page<UserResponseDTO> findAll = repository.findAll(of).map(user -> user.toDTO());
+        if (nome.isEmpty()) {
+            Page<Interest> findAll = repository.findAll(of);
+            return findAll;
+        }
+
+        Page<Interest> findAll = repository.findAllByNome(nome, of);
         return findAll;
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody @Valid UserRequestDTO item) {
+    public ResponseEntity<?> create(@RequestBody @Valid InterestRequestDTO item) {
         try {
-            User itemToBeSaved = item.toEntity();
-            boolean exists = repository.findByLoginIgnoreCase(itemToBeSaved.getLogin()).isEmpty();
+            Interest itemToBeSaved = item.toEntity();
+            boolean exists = repository.findByCarro(itemToBeSaved.getCarro()).isEmpty();
             if (!exists) {
-                return er.error("Usuário já existente", HttpStatus.CONFLICT);
+                return er.error("O carro já possui um usuário interessado", HttpStatus.CONFLICT);
             }
-            itemToBeSaved.setSenha(encoder.encode(itemToBeSaved.getSenha()));
-            User savedItem = repository.save(itemToBeSaved);
-            return new ResponseEntity<>(savedItem.toDTO(), HttpStatus.CREATED);
+            Interest savedItem = repository.save(itemToBeSaved);
+            return new ResponseEntity<>(savedItem, HttpStatus.CREATED);
         } catch (Exception e) {
 
-            return er.error("Erro ao criar usuário", HttpStatus.EXPECTATION_FAILED);
+            return er.error("Erro ao criar interesse", HttpStatus.EXPECTATION_FAILED);
         }
     }
 
     @DeleteMapping("{id}")
     @RolesAllowed("ADMIN")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
-        Optional<User> existingItemOptional = repository.findById(id);
+        Optional<Interest> existingItemOptional = repository.findById(id);
 
         if (existingItemOptional.isPresent()) {
             repository.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return er.error("Usuário não encontrado", HttpStatus.NOT_FOUND);
+            return er.error("Interesse não encontrado", HttpStatus.NOT_FOUND);
         }
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody UserRequestDTO item) {
-        Optional<User> existingItemOptional = repository.findById(id);
+    public ResponseEntity<?> update(@PathVariable("id") Long id, @RequestBody InterestRequestDTO item) {
+        Optional<Interest> existingItemOptional = repository.findById(id);
 
         if (existingItemOptional.isPresent()) {
-            User existingItem = existingItemOptional.get();
+            Interest existingItem = existingItemOptional.get();
+            Interest requestItem = item.toEntity();
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User name = (User) auth.getPrincipal();
+            User user = (User) auth.getPrincipal();
 
-            if (name.getId() != id && !name.getLogin().equalsIgnoreCase("admin")) {
+            if (requestItem.getNome() != existingItem.getNome() && !user.getLogin().equalsIgnoreCase("admin")) {
                 throw new AccessDeniedException("Acesso negado");
             }
 
-            ReplaceObjectAttributes<User> rep = new ReplaceObjectAttributes<>(existingItem);
+            ReplaceObjectAttributes<Interest> rep = new ReplaceObjectAttributes<>(existingItem);
             rep.replaceWith(item.toEntity());
 
-            UserResponseDTO savedItem = repository.save(existingItem).toDTO();
+            Interest savedItem = repository.save(existingItem);
 
             return new ResponseEntity<>(savedItem, HttpStatus.OK);
         } else {
-            return er.error("Usuario não encontrado", HttpStatus.NOT_FOUND);
+            return er.error("Interesse não encontrado", HttpStatus.NOT_FOUND);
         }
     }
 
-    @ExceptionHandler({ AccessDeniedException.class })
+    @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<?> handleAccessException(Exception ex, WebRequest request) {
         return er.error("Acesso negado. Nivel de permissão insuficiente", HttpStatus.FORBIDDEN);
     }
