@@ -3,15 +3,17 @@ package com.projeto.pi.projeto_pi.modals.interests;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.projeto.pi.projeto_pi.modals.cars.Car;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
+import lombok.Data;
 
+@Data
 public class InterestRequestDTO {
 
     @Id
@@ -19,12 +21,11 @@ public class InterestRequestDTO {
     private Long id;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @NotBlank(message = "O data de nascimento deve ser informado")
     @Past(message = "A data de nascimento deve ser posterior a data atual")
     private Date dataInteresse;
 
-    @NotBlank(message = "O carro deve ser informado")
-    private Car car;
+    @NotNull(message = "O carro deve ser informado")
+    private Long carId;
 
     @NotBlank(message = "O usuario deve ser informado")
     private String nome;
@@ -37,8 +38,12 @@ public class InterestRequestDTO {
 
     public Interest toEntity() {
         if (ativo == null) {
-            this.ativo = false;
+            ativo = true;
         }
-        return new Interest(id, dataInteresse, new Car(), nome, telefone, ativo);
+        if (dataInteresse == null) {
+            dataInteresse = new Date();
+        }
+
+        return new Interest(id, dataInteresse, null, nome, telefone, ativo);
     }
 }

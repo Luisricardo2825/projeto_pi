@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
+import com.projeto.pi.projeto_pi.modals.cars.Car;
+import com.projeto.pi.projeto_pi.modals.cars.CarRepo;
 import com.projeto.pi.projeto_pi.modals.interests.Interest;
 import com.projeto.pi.projeto_pi.modals.interests.InterestRepo;
 import com.projeto.pi.projeto_pi.modals.interests.InterestRequestDTO;
@@ -39,6 +41,9 @@ public class InterestController {
 
     @Autowired
     private InterestRepo repository;
+
+    @Autowired
+    CarRepo carRepo;
 
     @Autowired
     PasswordEncoder encoder;
@@ -68,7 +73,7 @@ public class InterestController {
 
     @GetMapping
     public Page<Interest> getAll(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size, @RequestParam(required = false) String nome) {
+            @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "") String nome) {
         PageRequest of = PageRequest.of(page, size);
 
         if (nome.isEmpty()) {
@@ -83,16 +88,27 @@ public class InterestController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody @Valid InterestRequestDTO item) {
         try {
+
             Interest itemToBeSaved = item.toEntity();
-            boolean exists = repository.findByCarro(itemToBeSaved.getCarro()).isEmpty();
-            if (!exists) {
+            Optional<Car> optCarro = carRepo.findById(item.getCarId());
+
+            if (optCarro.isEmpty()) {
+                return er.error("O carro informado não existe", HttpStatus.BAD_REQUEST);
+            }
+
+            Car carro = optCarro.get();
+            boolean exists = repository.findByCarro(carro).isPresent();
+            if (exists) {
                 return er.error("O carro já possui um usuário interessado", HttpStatus.CONFLICT);
             }
+            itemToBeSaved.setCarro(carro);
+
             Interest savedItem = repository.save(itemToBeSaved);
+
             return new ResponseEntity<>(savedItem, HttpStatus.CREATED);
         } catch (Exception e) {
 
-            return er.error("Erro ao criar interesse", HttpStatus.EXPECTATION_FAILED);
+            return er.error("Erro ao criar interesse:" + e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
     }
 

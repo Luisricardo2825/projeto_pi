@@ -55,9 +55,9 @@ public class UserController {
             User existingItem = existingItemOptional.get();
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User name = (User) auth.getPrincipal();
+            User user = (User) auth.getPrincipal();
 
-            if (name.getId() != id && !name.getLogin().equalsIgnoreCase("admin")) {
+            if (user.getId() != id && !user.getLogin().equalsIgnoreCase("admin")) {
                 throw new AccessDeniedException("Acesso negado");
             }
 
@@ -69,7 +69,6 @@ public class UserController {
     }
 
     @GetMapping
-    @RolesAllowed("ADMIN")
     public Page<UserResponseDTO> getAll(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         PageRequest of = PageRequest.of(page, size);
@@ -79,6 +78,7 @@ public class UserController {
     }
 
     @PostMapping
+    @RolesAllowed("ADMIN")
     public ResponseEntity<?> create(@RequestBody @Valid UserRequestDTO item) {
         try {
             User itemToBeSaved = item.toEntity();
@@ -116,9 +116,9 @@ public class UserController {
             User existingItem = existingItemOptional.get();
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            User name = (User) auth.getPrincipal();
+            User user = (User) auth.getPrincipal();
 
-            if (name.getId() != id && !name.getLogin().equalsIgnoreCase("admin")) {
+            if (user.getId() != id && !user.getLogin().equalsIgnoreCase("admin")) {
                 throw new AccessDeniedException("Acesso negado");
             }
 

@@ -1,8 +1,6 @@
 package com.projeto.pi.projeto_pi.modals.auth;
 
-import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.Instant;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,8 +14,7 @@ import lombok.Setter;
 public class LoginResponseDTO {
 
     private String token;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date exp;
+    private Instant exp;
     private String role;
     private Long userId;
     private String user;

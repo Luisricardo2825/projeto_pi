@@ -3,14 +3,11 @@ package com.projeto.pi.projeto_pi.modals.cars;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.projeto.pi.projeto_pi.modals.interests.Interest;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -50,9 +47,6 @@ public class Car {
     private double valor;
 
     private String image;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    private Interest interest;
 
     public Car(CarResponseDTO data) {
         this.marca = data.getMarca();

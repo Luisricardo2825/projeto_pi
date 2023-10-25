@@ -8,6 +8,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -55,10 +57,18 @@ public class CarController {
 
     @GetMapping
     public Page<CarResponseDTO> getAll(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "true") Boolean all) {
         PageRequest of = PageRequest.of(page, size);
 
-        Page<CarResponseDTO> findAll = repository.findAll(of).map(car -> car.toDTO());
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        String name = auth.getName();
+
+        if (name.equalsIgnoreCase("admin") && all) {
+            Page<CarResponseDTO> findAll = repository.findAll(of).map(car -> car.toDTO());
+            return findAll;
+        }
+        Page<CarResponseDTO> findAll = repository.findAllActive(of).map(car -> car.toDTO());
         return findAll;
     }
 

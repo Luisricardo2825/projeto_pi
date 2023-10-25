@@ -11,7 +11,7 @@ import com.projeto.pi.projeto_pi.utils.ReponseBuilder;
 
 import jakarta.validation.Valid;
 
-import java.util.Date;
+import java.time.Instant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,8 +44,7 @@ public class AuthController {
         User user = (User) authenticate.getPrincipal();
         String jwtToken = tokenService.generateToken(user);
 
-        // To date and hour
-        Date myDate = Date.from(tokenService.getExpirationDateFromToken());
+        Instant myDate = tokenService.getExpirationDateFromToken();
         String role = user.getRole();
         Long userId = user.getId();
         String login = user.getLogin();

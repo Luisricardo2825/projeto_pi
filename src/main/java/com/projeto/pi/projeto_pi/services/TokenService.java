@@ -1,8 +1,7 @@
 package com.projeto.pi.projeto_pi.services;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,8 +27,8 @@ public class TokenService {
                 .withSubject(user.getUsername())
                 .withClaim("id", user.getId())
                 .withExpiresAt(
-                        this.getExpirationDateFromToken())
-                .sign(Algorithm.HMAC256(secret));
+                        this.getExpirationDateFromToken() // UTC -03:00 Brasil
+                ).sign(Algorithm.HMAC256(secret));
     }
 
     public String verify(String token) {
@@ -37,9 +36,10 @@ public class TokenService {
     }
 
     public Instant getExpirationDateFromToken() {
-        return LocalDateTime.now()
-                .plusSeconds(tokenExpiration)
-                .toInstant(ZoneOffset.of("+00:00")); // Fortaleza-CE/Brasilia-DF é 00:00
+
+        return new Date(System.currentTimeMillis())
+                .toInstant().plusSeconds(tokenExpiration);
+
     }
 
 }

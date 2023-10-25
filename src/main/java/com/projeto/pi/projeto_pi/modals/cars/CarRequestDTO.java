@@ -3,12 +3,10 @@ package com.projeto.pi.projeto_pi.modals.cars;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.projeto.pi.projeto_pi.modals.interests.Interest;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -51,11 +49,8 @@ public class CarRequestDTO {
     @NotNull(message = "Valor invalido para a imagem")
     private String image;
 
-    @JoinColumn(name = "carId")
-    private Interest interest;
-
     public Car toEntity() {
-        return new Car(id, marca, descricao, modelo, anoModelo, anoFabricacao, valor, image, interest);
+        return new Car(id, marca, descricao, modelo, anoModelo, anoFabricacao, valor, image);
     }
 
 }
