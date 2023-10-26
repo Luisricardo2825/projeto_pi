@@ -40,13 +40,13 @@ public class Interest {
     private Date dataInteresse;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "carId", unique = true, nullable = false, updatable = false)
+    @JoinColumn(name = "carId", unique = false, nullable = false, updatable = false)
     private Car carro;
 
     private String nome;
 
     private String telefone;
 
-    private boolean ativo;
+    private boolean ativo = false;
 
 }

@@ -42,7 +42,7 @@ public class CarRequestDTO {
     private Date anoFabricacao;
 
     @NotNull(message = "Valor invalido para o valor")
-    @Min(value = 0, message = "O valor tem que ser maior que 0")
+    @Min(value = 1, message = "O valor tem que ser maior que 0")
     private double valor;
 
     @NotBlank(message = "A imagem deve ser informada")

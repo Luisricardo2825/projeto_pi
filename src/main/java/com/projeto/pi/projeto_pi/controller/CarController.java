@@ -45,7 +45,7 @@ public class CarController {
 
     @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable("id") Long id) {
-        Optional<Car> existingItemOptional = repository.findById(id);
+        Optional<Car> existingItemOptional = repository.findByIdActive(id);
 
         if (existingItemOptional.isPresent()) {
             return new ResponseEntity<CarResponseDTO>(existingItemOptional.get().toDTO(), HttpStatus.OK);

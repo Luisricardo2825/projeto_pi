@@ -11,6 +11,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,6 +87,7 @@ public class InterestController {
     }
 
     @PostMapping
+    @CrossOrigin(origins = "*")
     public ResponseEntity<?> create(@RequestBody @Valid InterestRequestDTO item) {
         try {
 
@@ -97,7 +99,8 @@ public class InterestController {
             }
 
             Car carro = optCarro.get();
-            boolean exists = repository.findByCarro(carro).isPresent();
+            Optional<Interest> findByCarro = repository.findByCarId(carro.getId());
+            boolean exists = findByCarro.isPresent();
             if (exists) {
                 return er.error("O carro já possui um usuário interessado", HttpStatus.CONFLICT);
             }

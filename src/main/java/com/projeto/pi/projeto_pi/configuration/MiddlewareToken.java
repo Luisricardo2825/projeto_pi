@@ -8,7 +8,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.projeto.pi.projeto_pi.modals.users.User;
 import com.projeto.pi.projeto_pi.modals.users.UserRepo;
 import com.projeto.pi.projeto_pi.services.TokenService;
@@ -46,8 +48,14 @@ public class MiddlewareToken extends OncePerRequestFilter {
                             user, null, user.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
-            } catch (JWTVerificationException e) {
+            } catch (TokenExpiredException e) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expirado");
+                return;
+            } catch (JWTDecodeException e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
+                return;
+            } catch (JWTVerificationException e) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.toString());
                 return;
             } catch (Exception e) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido:" + e.getMessage());

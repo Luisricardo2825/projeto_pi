@@ -38,6 +38,7 @@ public class Configs {
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/cars", "/cars/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/interests", "/interests/*").permitAll()
                         .anyRequest().hasRole("ADMIN"))
 
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Remove
