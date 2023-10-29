@@ -14,12 +14,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ErrorController {
     ReponseBuilder rb = new ReponseBuilder();
 

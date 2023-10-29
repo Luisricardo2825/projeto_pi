@@ -37,6 +37,7 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping("/interests")
 public class InterestController {
 
