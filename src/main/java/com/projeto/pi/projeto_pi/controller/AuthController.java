@@ -58,7 +58,8 @@ public class AuthController {
         String login = user.getLogin();
         String nome = user.getNome();
 
-        LoginResponseDTO loginReponse = new LoginResponseDTO(jwtToken, myDate, role, userId, role, nome, login);
+        LoginResponseDTO loginReponse = new LoginResponseDTO(jwtToken, myDate.toEpochMilli(), role, userId, role, nome,
+                login);
 
         return new ResponseEntity<>(loginReponse, HttpStatus.ACCEPTED);
     }
