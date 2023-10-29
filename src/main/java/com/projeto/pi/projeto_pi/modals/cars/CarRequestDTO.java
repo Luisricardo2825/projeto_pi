@@ -3,6 +3,7 @@ package com.projeto.pi.projeto_pi.modals.cars;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,6 +15,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CarRequestDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

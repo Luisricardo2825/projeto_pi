@@ -3,6 +3,7 @@ package com.projeto.pi.projeto_pi.modals.users;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.projeto.pi.projeto_pi.annotations.EnumValidator;
 
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserRequestDTO {
 
     @Id

@@ -9,15 +9,18 @@ import com.projeto.pi.projeto_pi.modals.users.User;
 import com.projeto.pi.projeto_pi.services.TokenService;
 import com.projeto.pi.projeto_pi.utils.ReponseBuilder;
 
+import ch.qos.logback.classic.Logger;
 import jakarta.validation.Valid;
 
 import java.time.Instant;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +31,9 @@ import org.springframework.http.ResponseEntity;
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AuthController {
+    private static String ERROR_LOGIN = "Usuário inexistente ou senha inválida";
+    // Logger
+    private static Logger logger = (Logger) LoggerFactory.getLogger(AuthController.class);
 
     ReponseBuilder res = new ReponseBuilder();
     @Autowired
@@ -60,8 +66,23 @@ public class AuthController {
     // ...
     @ExceptionHandler({ BadCredentialsException.class })
     public ResponseEntity<?> handleException(Exception ex, WebRequest request) {
-        return res.error(ex.getMessage(), HttpStatus.FORBIDDEN);
 
+        logger.error(ERROR_LOGIN);
+        logger.error(ex.getMessage());
+        logger.error(ex.getStackTrace().toString());
+
+        return res.error(ERROR_LOGIN, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthenticationException.class) // exception handled
+    public ResponseEntity<?> handleExceptions(
+            AuthenticationException ex) {
+
+        logger.error(ERROR_LOGIN);
+        logger.error(ex.getMessage());
+        logger.error(ex.getStackTrace().toString());
+
+        return res.error(ERROR_LOGIN, HttpStatus.FORBIDDEN);
     }
 
 }
