@@ -3,6 +3,7 @@ package com.projeto.pi.projeto_pi.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.web.config.PageableHandlerMethodArgumentResolverCustomizer;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -27,6 +28,11 @@ public class Configs {
     private MiddlewareToken filter;
 
     @Bean
+    PageableHandlerMethodArgumentResolverCustomizer pageableResolverCustomizer() {
+        return pageableResolver -> pageableResolver.setOneIndexedParameters(true);
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configure(http))
@@ -35,7 +41,7 @@ public class Configs {
                                 new AccessEntryPoint())) // Valida o erro na entrada(ex: Foi em uma
                                                          // rota sem autenticar)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login", "/refresh").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/cars", "/cars/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/interests", "/interests/*").permitAll()

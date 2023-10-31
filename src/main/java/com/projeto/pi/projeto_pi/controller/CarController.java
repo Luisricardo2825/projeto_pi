@@ -45,14 +45,29 @@ public class CarController {
 
     @GetMapping("{id}")
     public ResponseEntity<?> getById(@PathVariable("id") Long id) {
-        Optional<Car> existingItemOptional = repository.findByIdActive(id);
 
-        if (existingItemOptional.isPresent()) {
-            return new ResponseEntity<CarResponseDTO>(existingItemOptional.get().toDTO(), HttpStatus.OK);
-        } else {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-            return er.error("Carro não encontrado", HttpStatus.NOT_FOUND);
+        String name = auth.getName();
+
+        try {
+            if (name.equalsIgnoreCase("admin")) {
+                Optional<Car> existingItemOptional = repository.findById(id);
+                if (existingItemOptional.isPresent()) {
+                    return new ResponseEntity<CarResponseDTO>(existingItemOptional.get().toDTO(), HttpStatus.OK);
+                }
+            } else {
+                Optional<Car> existingItemOptional = repository.findByIdActive(id);
+
+                if (existingItemOptional.isPresent()) {
+                    return new ResponseEntity<CarResponseDTO>(existingItemOptional.get().toDTO(), HttpStatus.OK);
+                }
+            }
+            throw new Exception("Carro não encontrado");
+        } catch (Exception e) {
+            return er.error(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+
     }
 
     @GetMapping

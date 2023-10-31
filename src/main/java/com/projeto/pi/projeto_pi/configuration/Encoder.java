@@ -12,10 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  */
 public class Encoder {
 
-    /** 
+    /**
      * Retorna o codificador padrão
-    */
+     */
     public static PasswordEncoder getEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }
