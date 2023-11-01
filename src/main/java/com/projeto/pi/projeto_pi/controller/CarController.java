@@ -1,9 +1,11 @@
 package com.projeto.pi.projeto_pi.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,19 +74,42 @@ public class CarController {
 
     @GetMapping
     public Page<CarResponseDTO> getAll(@RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "true") Boolean all) {
+            @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "true") Boolean all,
+            @RequestParam(defaultValue = "") String modelo, @RequestParam(required = false) List<String> marca) {
         PageRequest of = PageRequest.of(page, size);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         String name = auth.getName();
-
-        if (name.equalsIgnoreCase("admin") && all) {
-            Page<CarResponseDTO> findAll = repository.findAll(of).map(car -> car.toDTO());
-            return findAll;
+        if (marca == null) {
+            marca = repository.findAllMarcas();
         }
-        Page<CarResponseDTO> findAll = repository.findAllActive(of).map(car -> car.toDTO());
-        return findAll;
+        if (name.equalsIgnoreCase("admin")) {
+
+            List<CarResponseDTO> findAll = repository.searchBy(modelo, marca, all).stream()
+                    .map(car -> car.toDTO()).toList();
+            int start = (int) of.getOffset();
+            int end = Math.min((start + of.getPageSize()), findAll.size());
+
+            List<CarResponseDTO> pageContent = findAll.subList(start, end);
+
+            return new PageImpl<>(pageContent, of, findAll.size());
+        }
+
+        List<CarResponseDTO> findAll = repository.searchBy(modelo, marca, false).stream()
+                .map(car -> car.toDTO()).toList();
+        int start = (int) of.getOffset();
+        int end = Math.min((start + of.getPageSize()), findAll.size());
+
+        List<CarResponseDTO> pageContent = findAll.subList(start, end);
+
+        return new PageImpl<>(pageContent, of, findAll.size());
+    }
+
+    @GetMapping
+    @RequestMapping("/marcas")
+    public List<String> getMarcas() {
+        return repository.findAllMarcas();
     }
 
     @PostMapping

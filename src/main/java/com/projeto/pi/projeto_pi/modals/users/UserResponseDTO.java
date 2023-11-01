@@ -2,8 +2,6 @@ package com.projeto.pi.projeto_pi.modals.users;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -20,9 +18,7 @@ public class UserResponseDTO {
     private String senha;
     private String nome;
     private Boolean ativo;
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dataNascimento;
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date dataCadastro;
     private String role;
 

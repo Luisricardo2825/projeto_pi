@@ -2,7 +2,6 @@ package com.projeto.pi.projeto_pi.modals.users;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.projeto.pi.projeto_pi.annotations.EnumValidator;
 
@@ -36,12 +35,10 @@ public class UserRequestDTO {
     @NotNull(message = "O ativo deve ser informado")
     private Boolean ativo;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "O data de nascimento deve ser informado")
     @Past(message = "A data de nascimento deve ser posterior a data atual")
     private Date dataNascimento;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "O data de cadastro deve ser informado")
     @PastOrPresent(message = "A data de cadastro nao pode ser posterior a data atual")
     private Date dataCadastro;
