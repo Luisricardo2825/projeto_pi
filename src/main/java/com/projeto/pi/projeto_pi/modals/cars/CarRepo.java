@@ -22,7 +22,7 @@ public interface CarRepo extends PagingAndSortingRepository<Car, Long> {
     List<String> findAllMarcas();
 
     @Query(value = "Select c.* from CARROS c Left join interesses i on i.car_id=c.id and i.data_interesse=(Select Max(data_interesse) from interesses where car_id=c.id) where (COALESCE(i.ativo,false)=false or COALESCE(i.ativo,false)= :ativos ) and (c.modelo like %:modelo% and c.marca in :marca) order by c.id", nativeQuery = true)
-    List<Car> searchBy(@Param("modelo") String modelo, @Param("marca") List<String> marca,
+    Page<Car> searchBy(Pageable pageable, @Param("modelo") String modelo, @Param("marca") List<String> marca,
             @Param("ativos") Boolean ativos);
 
     Car save(Car item);

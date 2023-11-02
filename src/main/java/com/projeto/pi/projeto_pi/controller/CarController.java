@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +28,8 @@ import com.projeto.pi.projeto_pi.modals.cars.Car;
 import com.projeto.pi.projeto_pi.modals.cars.CarRepo;
 import com.projeto.pi.projeto_pi.modals.cars.CarRequestDTO;
 import com.projeto.pi.projeto_pi.modals.cars.CarResponseDTO;
+import com.projeto.pi.projeto_pi.modals.interests.Interest;
+import com.projeto.pi.projeto_pi.modals.interests.InterestRepo;
 import com.projeto.pi.projeto_pi.utils.ReponseBuilder;
 import com.projeto.pi.projeto_pi.utils.ReplaceObjectAttributes;
 
@@ -42,6 +43,9 @@ public class CarController {
 
     @Autowired
     private CarRepo repository;
+
+    @Autowired
+    private InterestRepo interestRepo;
 
     ReponseBuilder er = new ReponseBuilder();
 
@@ -84,26 +88,13 @@ public class CarController {
         if (marca == null) {
             marca = repository.findAllMarcas();
         }
-        if (name.equalsIgnoreCase("admin")) {
 
-            List<CarResponseDTO> findAll = repository.searchBy(modelo, marca, all).stream()
-                    .map(car -> car.toDTO()).toList();
-            int start = (int) of.getOffset();
-            int end = Math.min((start + of.getPageSize()), findAll.size());
+        System.out.println("Usuário logado:" + name);
+        Page<CarResponseDTO> findAll = repository
+                .searchBy(of, modelo, marca, name.equalsIgnoreCase("admin") ? all : false)
+                .map(car -> car.toDTO());
 
-            List<CarResponseDTO> pageContent = findAll.subList(start, end);
-
-            return new PageImpl<>(pageContent, of, findAll.size());
-        }
-
-        List<CarResponseDTO> findAll = repository.searchBy(modelo, marca, false).stream()
-                .map(car -> car.toDTO()).toList();
-        int start = (int) of.getOffset();
-        int end = Math.min((start + of.getPageSize()), findAll.size());
-
-        List<CarResponseDTO> pageContent = findAll.subList(start, end);
-
-        return new PageImpl<>(pageContent, of, findAll.size());
+        return findAll;
     }
 
     @GetMapping
@@ -128,12 +119,23 @@ public class CarController {
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         Optional<Car> existingItemOptional = repository.findById(id);
 
-        if (existingItemOptional.isPresent()) {
+        try {
+            if (existingItemOptional.isEmpty())
+                throw new Exception("Carro não encontrado");
+            Car car = existingItemOptional.get();
+            Iterable<Interest> findByCarId = interestRepo.findAllByCarro(car);
+            
+            findByCarId.forEach(item -> {
+                interestRepo.deleteById(item.getId());
+            });
+
             repository.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return er.error("Carro não encontrado", HttpStatus.NOT_FOUND);
+
+        } catch (Exception e) {
+            return er.error(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+
     }
 
     @PutMapping("{id}")
