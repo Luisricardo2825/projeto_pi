@@ -71,13 +71,17 @@ public class User implements UserDetails {
 
     }
 
+    public String getRole() {
+        return this.role.toUpperCase();
+    }
+
     public UserResponseDTO toDTO() {
         return new UserResponseDTO(this);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = "ROLE_" + this.role;
+        String role = "ROLE_" + this.role.toUpperCase();
         return List.of(new SimpleGrantedAuthority(role));
     }
 

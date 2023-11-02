@@ -81,6 +81,10 @@ public class UserController {
     @RolesAllowed("ADMIN")
     public ResponseEntity<?> create(@RequestBody @Valid UserRequestDTO item) {
         try {
+            if (item.getRole() != null) {
+                item.setRole(item.getRole().toUpperCase()); /// Correção para que o role sempre seja em maisculo
+            }
+
             User itemToBeSaved = item.toEntity();
             boolean exists = repository.findByLoginIgnoreCase(itemToBeSaved.getLogin()).isEmpty();
             if (!exists) {
@@ -114,6 +118,10 @@ public class UserController {
 
         if (existingItemOptional.isPresent()) {
             User existingItem = existingItemOptional.get();
+
+            if (item.getRole() != null) {
+                item.setRole(item.getRole().toUpperCase());
+            } /// Correção para que o role sempre seja em maisculo
 
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             User user = (User) auth.getPrincipal();
