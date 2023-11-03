@@ -95,7 +95,7 @@ public class UserController {
             return new ResponseEntity<>(savedItem.toDTO(), HttpStatus.CREATED);
         } catch (Exception e) {
 
-            return er.error("Erro ao criar usuário", HttpStatus.EXPECTATION_FAILED);
+            return er.error("Erro ao criar usuário:" + e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
     }
 

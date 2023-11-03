@@ -58,14 +58,18 @@ public class AuthController {
 
         User user = (User) authenticate.getPrincipal();
         String jwtToken = tokenService.generateToken(user);
+        String refreshToken = tokenService.generateRefreshToken(user);
 
-        Instant myDate = tokenService.getExpirationDateFromToken();
+        Instant exp = tokenService.getExpirationDateFromToken();
+        Instant refreshInstant = tokenService.getExpirationDateFromRefreshToken();
         String role = user.getRole();
         Long userId = user.getId();
         String login = user.getLogin();
         String nome = user.getNome();
 
-        LoginResponseDTO loginReponse = new LoginResponseDTO(jwtToken, myDate.toEpochMilli(), role, userId, role, nome,
+        LoginResponseDTO loginReponse = new LoginResponseDTO(jwtToken, exp.toEpochMilli(), refreshToken,
+                refreshInstant.toEpochMilli(),
+                role, userId, role, nome,
                 login);
 
         return new ResponseEntity<>(loginReponse, HttpStatus.ACCEPTED);
@@ -75,7 +79,7 @@ public class AuthController {
     public ResponseEntity<?> refreshToken(@RequestBody @Valid RefreshTokenRequestDTO entity) {
 
         String requestToken = entity.getToken();
-        String jwtToken = tokenService.verify(requestToken);
+        String jwtToken = tokenService.verifyRefresh(requestToken);
         Optional<User> userOpt = userRepo.findByLoginIgnoreCase(jwtToken);
         if (userOpt.isEmpty()) {
             return res.error(ERROR_LOGIN, HttpStatus.FORBIDDEN);
@@ -91,15 +95,18 @@ public class AuthController {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         String newToken = tokenService.generateToken(user);
+        String refreshToken = tokenService.generateRefreshToken(user);
 
-        Instant myDate = tokenService.getExpirationDateFromToken();
+        Instant exp = tokenService.getExpirationDateFromToken();
+        Instant refreshInstant = tokenService.getExpirationDateFromRefreshToken();
 
         String role = user.getRole();
         Long userId = user.getId();
         String login = user.getLogin();
         String nome = user.getNome();
 
-        LoginResponseDTO loginReponse = new LoginResponseDTO(newToken, myDate.toEpochMilli(), role, userId, role, nome,
+        LoginResponseDTO loginReponse = new LoginResponseDTO(newToken, exp.toEpochMilli(), refreshToken,
+                refreshInstant.toEpochMilli(), role, userId, role, nome,
                 login);
 
         return new ResponseEntity<>(loginReponse, HttpStatus.ACCEPTED);

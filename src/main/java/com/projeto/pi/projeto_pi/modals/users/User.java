@@ -51,14 +51,14 @@ public class User implements UserDetails {
     private Date dataNascimento;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date dataCadastro;
+    private Date dataCadastro = new Date();
 
     public static enum Role {
         ADMIN,
         USER
     }
 
-    private String role;
+    private String role = "USER";
 
     public User(UserResponseDTO data) {
         this.id = data.getId();
@@ -72,7 +72,7 @@ public class User implements UserDetails {
     }
 
     public String getRole() {
-        return this.role.toUpperCase();
+        return this.role;
     }
 
     public UserResponseDTO toDTO() {
@@ -81,7 +81,10 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = "ROLE_" + this.role.toUpperCase();
+        String role = this.role;
+        if (this.role != null)
+            role = "ROLE_" + this.role.toUpperCase();
+
         return List.of(new SimpleGrantedAuthority(role));
     }
 

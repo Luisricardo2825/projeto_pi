@@ -19,6 +19,16 @@
       "name": "jwt.token.exp",
       "type": "java.lang.Long",
       "description": "Tempo de duração do token em segundos"
+    },
+    {
+      "name": "jwt.token.refreshExp",
+      "type": "java.lang.String",
+      "description": "Tempo de duração do refresh token em segundos"
+    },
+    {
+      "name": "jwt.token.refreshSecret",
+      "type": "java.lang.String",
+      "description": "Segredo a ser usado na geração do token/hash de refresh"
     }
   ]
 }

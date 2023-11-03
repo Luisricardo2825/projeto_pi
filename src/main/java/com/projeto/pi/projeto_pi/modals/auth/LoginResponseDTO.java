@@ -13,6 +13,8 @@ public class LoginResponseDTO {
 
     private String token;
     private Long exp;
+    private String refresh_token;
+    private Long exp_refresh;
     private String role;
     private Long userId;
     private String user;
