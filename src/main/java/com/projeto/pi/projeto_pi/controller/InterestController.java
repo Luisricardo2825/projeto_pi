@@ -29,6 +29,7 @@ import com.projeto.pi.projeto_pi.modals.cars.CarRepo;
 import com.projeto.pi.projeto_pi.modals.interests.Interest;
 import com.projeto.pi.projeto_pi.modals.interests.InterestRepo;
 import com.projeto.pi.projeto_pi.modals.interests.InterestRequestDTO;
+import com.projeto.pi.projeto_pi.modals.interests.InterestResponseDTO;
 import com.projeto.pi.projeto_pi.modals.users.User;
 import com.projeto.pi.projeto_pi.utils.ReplaceObjectAttributes;
 import com.projeto.pi.projeto_pi.utils.ReponseBuilder;
@@ -66,7 +67,7 @@ public class InterestController {
                 throw new AccessDeniedException("Acesso negado");
             }
 
-            return new ResponseEntity<Interest>(existingItem, HttpStatus.OK);
+            return new ResponseEntity<>(existingItem, HttpStatus.OK);
         } else {
 
             return er.error("Interesse não encontrado", HttpStatus.NOT_FOUND);
@@ -74,7 +75,7 @@ public class InterestController {
     }
 
     @GetMapping
-    public Page<Interest> getAll(@RequestParam(defaultValue = "0") int page,
+    public Page<?> getAll(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "") String nome) {
         PageRequest of = PageRequest.of(page, size);
 
@@ -109,7 +110,9 @@ public class InterestController {
 
             Interest savedItem = repository.save(itemToBeSaved);
 
-            return new ResponseEntity<>(savedItem, HttpStatus.CREATED);
+            InterestResponseDTO dto = new InterestResponseDTO(savedItem);
+
+            return new ResponseEntity<>(dto, HttpStatus.CREATED);
         } catch (Exception e) {
 
             return er.error("Erro ao criar interesse:" + e.getMessage(), HttpStatus.EXPECTATION_FAILED);
@@ -148,8 +151,8 @@ public class InterestController {
             rep.replaceWith(item.toEntity());
 
             Interest savedItem = repository.save(existingItem);
-
-            return new ResponseEntity<>(savedItem, HttpStatus.OK);
+            InterestResponseDTO dto = new InterestResponseDTO(savedItem);
+            return new ResponseEntity<>(dto, HttpStatus.OK);
         } else {
             return er.error("Interesse não encontrado", HttpStatus.NOT_FOUND);
         }

@@ -49,4 +49,8 @@ public class Interest {
 
     private boolean ativo = false;
 
+    public InterestResponseDTO toDTO() {
+        return new InterestResponseDTO(this);
+    }
+
 }
