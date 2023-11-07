@@ -47,7 +47,8 @@ public class Car {
     private Date anoFabricacao;
 
     private double valor;
-
+    
+    @Column(length = 65_000)
     private String image;
 
     public Car(CarResponseDTO data) {
