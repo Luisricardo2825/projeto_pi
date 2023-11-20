@@ -40,10 +40,10 @@ public class Car {
 
     private String modelo;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy")
     private Date anoModelo;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy")
     private Date anoFabricacao;
 
     private double valor;

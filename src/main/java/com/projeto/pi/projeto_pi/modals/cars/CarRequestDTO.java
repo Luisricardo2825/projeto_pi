@@ -33,12 +33,12 @@ public class CarRequestDTO {
     @NotNull(message = "Valor invalido para o modelo")
     private String modelo;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy")
     @NotNull(message = "O ano do modelo deve ser informado")
     @NotNull(message = "Valor invalido para o ano do modelo")
     private Date anoModelo;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy")
     @NotNull(message = "Valor invalido para o ano de fabricacao")
     @PastOrPresent(message = "A data de fabricacao nao pode ser posterior a data atual")
     private Date anoFabricacao;
