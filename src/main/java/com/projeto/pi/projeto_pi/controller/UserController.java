@@ -1,5 +1,7 @@
 package com.projeto.pi.projeto_pi.controller;
 
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
 import com.projeto.pi.projeto_pi.modals.users.User;
+import com.projeto.pi.projeto_pi.modals.users.UserRecoverDTO;
 import com.projeto.pi.projeto_pi.modals.users.UserRepo;
 import com.projeto.pi.projeto_pi.modals.users.UserRequestDTO;
 import com.projeto.pi.projeto_pi.modals.users.UserResponseDTO;
@@ -132,6 +135,37 @@ public class UserController {
 
             ReplaceObjectAttributes<User> rep = new ReplaceObjectAttributes<>(existingItem);
             rep.replaceWith(item.toEntity());
+
+            UserResponseDTO savedItem = repository.save(existingItem).toDTO();
+
+            return new ResponseEntity<>(savedItem, HttpStatus.OK);
+        } else {
+            return er.error("Usuario não encontrado", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<?> recover(@RequestBody UserRecoverDTO item) {
+
+        if (item.getSenha() == null) {
+            return er.error("Senha não informada", HttpStatus.BAD_REQUEST);
+        }
+        if (item.getDataNascimento() == null) {
+            return er.error("Data de nascimento não informada", HttpStatus.BAD_REQUEST);
+        }
+
+        Date data = Date.from(item.getDataNascimento().toInstant().plus(1, ChronoUnit.DAYS));
+
+        Optional<User> existingItemOptional = repository.findToRecover(item.getLogin(),
+                data);
+
+        if (existingItemOptional.isPresent()) {
+            User existingItem = existingItemOptional.get();
+            existingItem.setSenha(item.getSenha());
+
+            ReplaceObjectAttributes<User> rep = new ReplaceObjectAttributes<>(existingItem);
+
+            rep.replaceWith(existingItem);
 
             UserResponseDTO savedItem = repository.save(existingItem).toDTO();
 
