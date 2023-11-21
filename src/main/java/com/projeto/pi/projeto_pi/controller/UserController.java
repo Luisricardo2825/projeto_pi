@@ -156,8 +156,7 @@ public class UserController {
 
         Date data = Date.from(item.getDataNascimento().toInstant().plus(1, ChronoUnit.DAYS));
 
-        Optional<User> existingItemOptional = repository.findToRecover(item.getLogin(),
-                data);
+        Optional<User> existingItemOptional = repository.findToRecover(item.getLogin());
 
         if (existingItemOptional.isPresent()) {
             User existingItem = existingItemOptional.get();

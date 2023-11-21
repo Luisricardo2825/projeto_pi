@@ -16,6 +16,6 @@ public interface UserRepo extends PagingAndSortingRepository<User, Long> {
 
     Optional<User> findByLoginIgnoreCase(String login);
 
-    @Query(value = "Select * from usuarios where  cast(data_nascimento as date) = :dtnascimento and upper(login)=upper(:login)", nativeQuery = true)
-    Optional<User> findToRecover(@Param("login") String login, @Param("dtnascimento") Date dtnascimento);
+    @Query(value = "Select * from usuarios where upper(login)=upper(:login)", nativeQuery = true)
+    Optional<User> findToRecover(@Param("login") String login );
 }
