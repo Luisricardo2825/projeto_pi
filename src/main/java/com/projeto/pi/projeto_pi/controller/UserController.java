@@ -1,5 +1,6 @@
 package com.projeto.pi.projeto_pi.controller;
 
+import java.text.SimpleDateFormat;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Optional;
@@ -154,9 +155,13 @@ public class UserController {
             return er.error("Data de nascimento não informada", HttpStatus.BAD_REQUEST);
         }
 
-        Date data = Date.from(item.getDataNascimento().toInstant().plus(1, ChronoUnit.DAYS));
+        Date data = Date.from(item.getDataNascimento().toInstant().plus(3, ChronoUnit.HOURS));
 
-        Optional<User> existingItemOptional = repository.findToRecover(item.getLogin());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String dataFormatada = sdf.format(data);
+
+        Optional<User> existingItemOptional = repository.findToRecover(item.getLogin(),
+                dataFormatada);
 
         if (existingItemOptional.isPresent()) {
             User existingItem = existingItemOptional.get();

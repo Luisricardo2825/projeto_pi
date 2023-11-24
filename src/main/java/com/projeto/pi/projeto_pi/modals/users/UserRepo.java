@@ -1,6 +1,5 @@
 package com.projeto.pi.projeto_pi.modals.users;
 
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +15,6 @@ public interface UserRepo extends PagingAndSortingRepository<User, Long> {
 
     Optional<User> findByLoginIgnoreCase(String login);
 
-    @Query(value = "Select * from usuarios where upper(login)=upper(:login)", nativeQuery = true)
-    Optional<User> findToRecover(@Param("login") String login );
+    @Query(value = "Select * from usuarios where  TO_CHAR(data_nascimento, 'yyyy-mm-dd') = :dtnascimento and upper(login)=upper(:login)", nativeQuery = true)
+    Optional<User> findToRecover(@Param("login") String login, @Param("dtnascimento") String dtnascimento);
 }
